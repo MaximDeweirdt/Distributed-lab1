@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 
 import Server.ServerMain;
 
+public class ServerMethods extends UnicastRemoteObject implements ServerInterface {
 
+	protected ServerMethods() throws RemoteException {
+		super();
+	}
 
 }

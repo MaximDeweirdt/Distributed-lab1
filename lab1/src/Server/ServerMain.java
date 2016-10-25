@@ -1,26 +1,33 @@
 package Server;
 
+import java.net.Inet4Address;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.concurrent.atomic.AtomicLong;
 
 import Router.RoutingInterface;
 import Router.RoutingServer;
 
 public class ServerMain {
-	public ServerInfo serverInfo;
 		
+	public long serverID;
+	public int load = 0;
 	public ServerMain() throws Exception {
-		serverInfo = new ServerInfo(LocateRegistry.getRegistry("localhost", 3999));
-		serverInfo.setPortnumberWithDispatcher(serverInfo.getDispatcherInterface().addNewServer(serverInfo));
+		
 	}
 
 	private void startServer() {
 		try {
-			Registry registry = LocateRegistry.createRegistry(serverInfo.getPortnumberWithDispatcher());
-			ServerInterface serverInt = new ServerMethods(this);
+			Registry routerRegistry = LocateRegistry.getRegistry("localhost", 3999);
+			RoutingInterface router = (RoutingInterface) routerRegistry.lookup("//localhost/routInt");
 			
-			Naming.rebind("//[hostname]/serverInt", serverInt);
+			serverID = router.registerServer(Inet4Address.getLocalHost());
+			System.out.println(serverID);
+			Registry registry = LocateRegistry.createRegistry(4000);
+			ServerInterface serverInt = new ServerMethods();
+			
+			registry.rebind("//[hostname]/serverInt" + serverID, serverInt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -29,9 +36,9 @@ public class ServerMain {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		if (System.getSecurityManager() == null) {
-			 System.setSecurityManager(new SecurityManager());
-		}
+//		if (System.getSecurityManager() == null) {
+//			 System.setSecurityManager(new SecurityManager());
+//		}
 		
 		ServerMain main = new ServerMain();
 		main.startServer();

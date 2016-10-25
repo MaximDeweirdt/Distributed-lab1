@@ -13,12 +13,11 @@ public class Router {
 	private void startRouter() {
 
 		try {
-			// create on port 1099
 			Registry registry = LocateRegistry.createRegistry(3999);
 			
 			RoutingInterface routInt = new RoutingServer();
 			
-			Naming.rebind("//[hostname]/routInt", routInt);
+			registry.rebind("//localhost/routInt", routInt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -26,9 +25,9 @@ public class Router {
 	}
 	public static void main(String[] args){
 		
-		if (System.getSecurityManager() == null) {
-			 System.setSecurityManager(new SecurityManager());
-		}
+//		if (System.getSecurityManager() == null) {
+//			 System.setSecurityManager(new SecurityManager());
+//		}
 		
 		Router main = new Router();
 		main.startRouter();
